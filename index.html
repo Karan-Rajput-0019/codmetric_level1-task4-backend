@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WanderShare — Community Travel</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase SDKs (modular) -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">WS</div>
+        <div>
+          <h1>WanderShare</h1>
+          <div class="subtitle">Share travel photos and stories — mobile friendly</div>
+        </div>
+      </div>
+
+      <nav>
+        <button class="btn" id="signInBtn">Sign in</button>
+        <button class="btn ghost" id="signOutBtn" hidden>Sign out</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="content" id="feed">
+        <!-- Posts injected here -->
+      </section>
+
+      <aside>
+        <div class="card">
+          <strong id="userGreeting">Welcome</strong>
+          <p class="muted">Sign in to post and manage your uploads.</p>
+        </div>
+
+        <div class="card">
+          <strong>Submit a Post</strong>
+          <form id="shareForm" novalidate>
+            <label for="author">Display name</label>
+            <input id="author" type="text" placeholder="Your name" required>
+
+            <label for="title">Title</label>
+            <input id="title" type="text" placeholder="Short title" required>
+
+            <label for="place">Location</label>
+            <input id="place" type="text" placeholder="City, Country">
+
+            <label for="image">Photo (jpg/png)</label>
+            <input id="image" type="file" accept="image/*" aria-describedby="imageHelp">
+            <div id="imageHelp" class="muted small">Up to 10 MB recommended. Larger files will be resized client-side.</div>
+
+            <label for="story">Story</label>
+            <textarea id="story" placeholder="Share your experience" required></textarea>
+
+            <div class="form-actions">
+              <button type="button" class="btn ghost" id="clearFormBtn">Clear</button>
+              <button type="submit" class="btn primary" id="postBtn">Post</button>
+            </div>
+
+            <div id="submitStatus" class="form-status" aria-live="polite"></div>
+          </form>
+        </div>
+
+        <div class="card">
+          <strong>Gallery</strong>
+          <div class="gallery-grid" id="gallery"></div>
+          <div style="margin-top:10px">
+            <button class="btn" id="loadMoreBtn">Load more</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <small>© 2025 WanderShare — Built for community sharing</small>
+    </footer>
+  </div>
+
+  <!-- Post template -->
+  <template id="postTemplate">
+    <article class="post">
+      <img class="post-image" alt="photo">
+      <div class="post-body">
+        <div class="meta"><span class="date"></span> • <span class="place"></span></div>
+        <h3 class="post-title"></h3>
+        <p class="post-text"></p>
+        <div class="post-footer">
+          <div class="author"></div>
+          <div class="actions">
+            <button class="btn small likeBtn">Like</button>
+            <button class="btn small deleteBtn ghost">Delete</button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
