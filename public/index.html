@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WanderShare — Community travel</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="main.js" defer></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">WS</div>
+        <div>
+          <h1>WanderShare</h1>
+          <div class="subtitle">Share travel photos and stories</div>
+        </div>
+      </div>
+
+      <nav>
+        <button id="authBtn" class="btn">Sign in</button>
+        <button id="signOutBtn" class="btn ghost" hidden>Sign out</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="content" id="feed">
+        <div class="card">Loading posts…</div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <strong id="userGreeting">Welcome</strong>
+          <p class="muted">Sign in to post and manage uploads.</p>
+        </div>
+
+        <div class="card">
+          <strong>Share a Photo & Story</strong>
+          <form id="shareForm">
+            <label>Title</label>
+            <input id="title" type="text" required>
+
+            <label>Location</label>
+            <input id="location" type="text">
+
+            <label>Image</label>
+            <input id="image" type="file" accept="image/*">
+
+            <label>Story</label>
+            <textarea id="story" required></textarea>
+
+            <div class="form-actions">
+              <button type="button" id="clearBtn" class="btn ghost">Clear</button>
+              <button type="submit" id="postBtn" class="btn primary">Post</button>
+            </div>
+
+            <div id="status" class="form-status" aria-live="polite"></div>
+          </form>
+        </div>
+
+        <div class="card">
+          <strong>Gallery</strong>
+          <div id="gallery" class="gallery-grid"></div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <small>© 2025 WanderShare</small>
+    </footer>
+  </div>
+
+  <!-- post template -->
+  <template id="postTpl">
+    <article class="post">
+      <img class="post-image" alt="photo">
+      <div class="post-body">
+        <div class="meta"><span class="date"></span> • <span class="place"></span></div>
+        <h3 class="post-title"></h3>
+        <p class="post-text"></p>
+        <div class="post-footer">
+          <div class="author"></div>
+        </div>
+      </div>
+    </article>
+  </template>
+</body>
+</html>
