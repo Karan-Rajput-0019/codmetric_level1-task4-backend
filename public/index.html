@@ -3,29 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>WanderShare — Community travel</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>WanderShare — Community Travel</title>
+  <link rel="stylesheet" href="styles.css" />
   <script type="module" src="main.js" defer></script>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div class="brand">
-        <div class="logo">WS</div>
+        <div class="logo" aria-label="WanderShare logo">WS</div>
         <div>
           <h1>WanderShare</h1>
-          <div class="subtitle">Share travel photos and stories</div>
+          <p class="subtitle">Share travel photos and stories</p>
         </div>
       </div>
-
       <nav>
-        <button id="authBtn" class="btn">Sign in</button>
-        <button id="signOutBtn" class="btn ghost" hidden>Sign out</button>
+        <button id="authBtn" class="btn" aria-label="Sign in with Google">Sign in</button>
+        <button id="signOutBtn" class="btn ghost" hidden aria-label="Sign out">Sign out</button>
       </nav>
     </header>
 
     <main>
-      <section class="content" id="feed">
+      <section class="content" id="feed" aria-label="Post Feed">
         <div class="card">Loading posts…</div>
       </section>
 
@@ -37,18 +36,18 @@
 
         <div class="card">
           <strong>Share a Photo & Story</strong>
-          <form id="shareForm">
-            <label>Title</label>
-            <input id="title" type="text" required>
+          <form id="shareForm" aria-label="Share a travel story">
+            <label for="title">Title</label>
+            <input id="title" type="text" required placeholder="e.g. Sunset in Goa" />
 
-            <label>Location</label>
-            <input id="location" type="text">
+            <label for="location">Location</label>
+            <input id="location" type="text" placeholder="e.g. Goa, India" />
 
-            <label>Image</label>
-            <input id="image" type="file" accept="image/*">
+            <label for="image">Image</label>
+            <input id="image" type="file" accept="image/*" aria-label="Upload a travel photo" />
 
-            <label>Story</label>
-            <textarea id="story" required></textarea>
+            <label for="story">Story</label>
+            <textarea id="story" required placeholder="Write your travel experience here..."></textarea>
 
             <div class="form-actions">
               <button type="button" id="clearBtn" class="btn ghost">Clear</button>
@@ -61,7 +60,7 @@
 
         <div class="card">
           <strong>Gallery</strong>
-          <div id="gallery" class="gallery-grid"></div>
+          <div id="gallery" class="gallery-grid" aria-label="Photo Gallery"></div>
         </div>
       </aside>
     </main>
@@ -74,9 +73,11 @@
   <!-- post template -->
   <template id="postTpl">
     <article class="post">
-      <img class="post-image" alt="photo">
+      <img class="post-image" alt="Travel photo" />
       <div class="post-body">
-        <div class="meta"><span class="date"></span> • <span class="place"></span></div>
+        <div class="meta">
+          <span class="date"></span> • <span class="place"></span>
+        </div>
         <h3 class="post-title"></h3>
         <p class="post-text"></p>
         <div class="post-footer">
