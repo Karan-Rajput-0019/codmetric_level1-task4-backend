@@ -1,12 +1,13 @@
 const SUPABASE_URL = "https://qnphvvpvhqjlcztqhddt.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFucGh2dnB2aHFqbGN6dHFoZGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5ODM5NDEsImV4cCI6MjA3NDU1OTk0MX0.b3aF1NddQYr4_-TE3cxPGygRq4CRS5a1-_MbohqOcew";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFucGh2dnB2aHFqbGN6dHFoZGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5ODM5NDEsImV4cCI6MjA3NDU1OTk0MX0.b3aF1NddQYr4_-TE3cxPGygRq4CRS5a1-_MbohqOcew"; // Replace with your actual anon key
 const API_BASE = "http://localhost:4000";
 
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// UI elements
 const authBtn = document.getElementById("authBtn");
+const signUpBtn = document.getElementById("signUpBtn");
 const signOutBtn = document.getElementById("signOutBtn");
 const userGreeting = document.getElementById("userGreeting");
 const statusEl = document.getElementById("status");
@@ -15,11 +16,34 @@ const galleryEl = document.getElementById("gallery");
 const shareForm = document.getElementById("shareForm");
 const postTpl = document.getElementById("postTpl");
 
+// Modal elements
+const authModal = document.getElementById("authModal");
+const modalTitle = document.getElementById("modalTitle");
+const authForm = document.getElementById("authForm");
+const modalEmail = document.getElementById("modalEmail");
+const modalPassword = document.getElementById("modalPassword");
+const modalMessage = document.getElementById("modalMessage");
+const closeModal = document.getElementById("closeModal");
+
 let currentUser = null;
+let isSignup = false;
 
 function setStatus(msg, color) {
   statusEl.textContent = msg || "";
   statusEl.style.color = color || "";
+}
+
+function showModal(signup = false) {
+  isSignup = signup;
+  modalTitle.textContent = signup ? "Sign Up" : "Sign In";
+  modalMessage.textContent = "";
+  modalEmail.value = "";
+  modalPassword.value = "";
+  authModal.classList.remove("hidden");
+}
+
+function hideModal() {
+  authModal.classList.add("hidden");
 }
 
 async function refreshUser() {
@@ -28,19 +52,50 @@ async function refreshUser() {
   if (currentUser) {
     userGreeting.textContent = `Hello, ${currentUser.user_metadata?.full_name || currentUser.email.split("@")[0]}`;
     authBtn.hidden = true;
+    signUpBtn.hidden = true;
     signOutBtn.hidden = false;
   } else {
     userGreeting.textContent = "Welcome";
     authBtn.hidden = false;
+    signUpBtn.hidden = false;
     signOutBtn.hidden = true;
   }
 }
 
-// Sign in with Google
-authBtn.addEventListener("click", async () => {
-  setStatus("Signing in...");
-  const { error } = await supabase.auth.signInWithOAuth({ provider: "google" });
-  if (error) setStatus("Sign-in failed: " + error.message, "red");
+// Open modal
+authBtn.addEventListener("click", () => showModal(false));
+signUpBtn.addEventListener("click", () => showModal(true));
+closeModal.addEventListener("click", hideModal);
+
+// Handle modal form
+authForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = modalEmail.value.trim();
+  const password = modalPassword.value.trim();
+  modalMessage.textContent = "";
+
+  if (!email || !password) {
+    modalMessage.textContent = "Email and password required";
+    return;
+  }
+
+  modalMessage.textContent = isSignup ? "Signing up..." : "Signing in...";
+
+  const action = isSignup
+    ? supabase.auth.signUp({ email, password })
+    : supabase.auth.signInWithPassword({ email, password });
+
+  const { error } = await action;
+
+  if (error) {
+    modalMessage.textContent = error.message;
+  } else {
+    modalMessage.textContent = isSignup
+      ? "Signup successful! Check your email to confirm."
+      : "Signed in successfully!";
+    hideModal();
+    await refreshUser();
+  }
 });
 
 // Sign out
