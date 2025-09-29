@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://qnphvvpvhqjlcztqhddt.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFucGh2dnB2aHFqbGN6dHFoZGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5ODM5NDEsImV4cCI6MjA3NDU1OTk0MX0.b3aF1NddQYr4_-TE3cxPGygRq4CRS5a1-_MbohqOcew"; // Replace with your actual anon key
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFucGh2dnB2aHFqbGN6dHFoZGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5ODM5NDEsImV4cCI6MjA3NDU1OTk0MX0.b3aF1NddQYr4_-TE3cxPGygRq4CRS5a1-_MbohqOcew";
 const API_BASE = "http://localhost:4000";
 
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
@@ -67,7 +67,7 @@ authBtn.addEventListener("click", () => showModal(false));
 signUpBtn.addEventListener("click", () => showModal(true));
 closeModal.addEventListener("click", hideModal);
 
-// Handle modal form
+// ✅ Improved sign-in/sign-up logic with error handling
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = modalEmail.value.trim();
@@ -81,20 +81,32 @@ authForm.addEventListener("submit", async (e) => {
 
   modalMessage.textContent = isSignup ? "Signing up..." : "Signing in...";
 
-  const action = isSignup
-    ? supabase.auth.signUp({ email, password })
-    : supabase.auth.signInWithPassword({ email, password });
+  try {
+    const action = isSignup
+      ? supabase.auth.signUp({ email, password })
+      : supabase.auth.signInWithPassword({ email, password });
 
-  const { error } = await action;
+    const { data, error } = await action;
 
-  if (error) {
-    modalMessage.textContent = error.message;
-  } else {
+    if (error) {
+      console.error("Auth error:", error.message);
+      modalMessage.textContent = error.message;
+      return;
+    }
+
+    if (!data.session && !isSignup) {
+      modalMessage.textContent = "Sign-in failed: No session returned";
+      return;
+    }
+
     modalMessage.textContent = isSignup
       ? "Signup successful! Check your email to confirm."
       : "Signed in successfully!";
     hideModal();
     await refreshUser();
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    modalMessage.textContent = "Something went wrong. Try again.";
   }
 });
 

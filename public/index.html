@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -18,7 +18,6 @@
         </div>
       </div>
       <nav>
-        <!-- ✅ Updated buttons -->
         <button id="authBtn" class="btn" aria-label="Sign in with email">Sign in</button>
         <button id="signUpBtn" class="btn ghost" aria-label="Sign up with email">Sign up</button>
         <button id="signOutBtn" class="btn ghost" hidden aria-label="Sign out">Sign out</button>
@@ -72,7 +71,7 @@
     </footer>
   </div>
 
-  <!-- post template -->
+  <!-- Post Template -->
   <template id="postTpl">
     <article class="post">
       <img class="post-image" alt="Travel photo" />
@@ -88,18 +87,19 @@
       </div>
     </article>
   </template>
+
   <!-- Auth Modal -->
-<div id="authModal" class="modal hidden">
-  <div class="modal-content">
-    <h2 id="modalTitle">Sign In</h2>
-    <form id="authForm">
-      <input type="email" id="modalEmail" placeholder="Email" required />
-      <input type="password" id="modalPassword" placeholder="Password" required />
-      <button type="submit" class="btn primary">Continue</button>
-      <p id="modalMessage" class="form-status"></p>
-    </form>
-    <button id="closeModal" class="btn ghost">Cancel</button>
+  <div id="authModal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="modalTitle">Sign In</h2>
+      <form id="authForm">
+        <input type="email" id="modalEmail" placeholder="Email" required />
+        <input type="password" id="modalPassword" placeholder="Password" required />
+        <button type="submit" class="btn primary">Continue</button>
+        <p id="modalMessage" class="form-status" aria-live="polite"></p>
+      </form>
+      <button id="closeModal" class="btn ghost">Cancel</button>
+    </div>
   </div>
-</div>
 </body>
 </html>
