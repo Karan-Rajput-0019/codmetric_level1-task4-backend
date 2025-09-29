@@ -67,7 +67,7 @@ authBtn.addEventListener("click", () => showModal(false));
 signUpBtn.addEventListener("click", () => showModal(true));
 closeModal.addEventListener("click", hideModal);
 
-// ✅ Improved sign-in/sign-up logic with error handling
+// ✅ Improved sign-in/sign-up logic with logging
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = modalEmail.value.trim();
@@ -80,6 +80,8 @@ authForm.addEventListener("submit", async (e) => {
   }
 
   modalMessage.textContent = isSignup ? "Signing up..." : "Signing in...";
+  console.log("🔐 Attempting sign-in with:", email);
+  console.log("🧠 isSignup:", isSignup);
 
   try {
     const action = isSignup
@@ -87,6 +89,7 @@ authForm.addEventListener("submit", async (e) => {
       : supabase.auth.signInWithPassword({ email, password });
 
     const { data, error } = await action;
+    console.log("✅ Supabase response:", { data, error });
 
     if (error) {
       console.error("Auth error:", error.message);
