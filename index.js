@@ -9,10 +9,7 @@ import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 
-app.use(helmet());
-app.use(compression());
-app.use(cookieParser());
-
+// Load env first
 dotenv.config();
 
 const {
@@ -30,16 +27,27 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   process.exit(1);
 }
 
+// Create server-side Supabase client using service role
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false }
 });
 
 const app = express();
+
+// Security & performance middlewares (after app created)
+app.use(helmet());
+app.use(compression());
+app.use(cookieParser());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Configure CORS: allow configured origins and credentials if cookies are used
-const origins = CORS_ORIGINS.split(",").map(s => s.trim()).filter(Boolean);
+const origins = String(CORS_ORIGINS || "")
+  .split(",")
+  .map(s => s.trim())
+  .filter(Boolean);
+
 app.use(cors({
   origin: origins.length ? origins : true,
   credentials: true
@@ -48,9 +56,7 @@ app.use(cors({
 // Small middleware to ensure API responses include charset and a cache policy
 app.use((req, res, next) => {
   if (req.path.startsWith("/api/")) {
-    // ensure JSON responses include charset
     res.setHeader("Content-Type", "application/json; charset=utf-8");
-    // tell browsers not to cache sensitive API responses
     res.setHeader("Cache-Control", "no-store");
   }
   next();
@@ -70,19 +76,10 @@ app.post("/api/signin", async (req, res) => {
     console.log("[/api/signin] headers:", req.headers["content-type"]);
     console.log("[/api/signin] body:", req.body);
 
-    const { email, password } = req.body;
+    const { email } = req.body;
     if (!email || typeof email !== "string") {
       return res.status(400).json({ error: "Invalid email" });
     }
-
-    // If you later want to set cookies here, use res.cookie(...) so Express formats Expires correctly.
-    // Example (uncomment when needed):
-    // res.cookie("session_token", tokenValue, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: "lax",
-    //   expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    // });
 
     return res.status(200).json({ message: "Sign-in successful", email });
   } catch (err) {
