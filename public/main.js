@@ -1,3 +1,5 @@
+console.log("🚀 main.js is running");
+
 const SUPABASE_URL = "https://qnphvvpvhqjlcztqhddt.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFucGh2dnB2aHFqbGN6dHFoZGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5ODM5NDEsImV4cCI6MjA3NDU1OTk0MX0.b3aF1NddQYr4_-TE3cxPGygRq4CRS5a1-_MbohqOcew";
 const API_BASE = "http://localhost:4000";
@@ -63,58 +65,66 @@ async function refreshUser() {
 }
 
 // Open modal
-authBtn.addEventListener("click", () => showModal(false));
-signUpBtn.addEventListener("click", () => showModal(true));
-closeModal.addEventListener("click", hideModal);
+authBtn?.addEventListener("click", () => showModal(false));
+signUpBtn?.addEventListener("click", () => showModal(true));
+closeModal?.addEventListener("click", hideModal);
 
-// ✅ Improved sign-in/sign-up logic with logging
-authForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = modalEmail.value.trim();
-  const password = modalPassword.value.trim();
-  modalMessage.textContent = "";
+// ✅ Confirm form exists
+if (!authForm) {
+  console.warn("⚠️ authForm not found");
+} else {
+  console.log("✅ authForm found");
 
-  if (!email || !password) {
-    modalMessage.textContent = "Email and password required";
-    return;
-  }
+  authForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    console.log("✅ authForm submit triggered");
 
-  modalMessage.textContent = isSignup ? "Signing up..." : "Signing in...";
-  console.log("🔐 Attempting sign-in with:", email);
-  console.log("🧠 isSignup:", isSignup);
+    const email = modalEmail.value.trim();
+    const password = modalPassword.value.trim();
+    modalMessage.textContent = "";
 
-  try {
-    const action = isSignup
-      ? supabase.auth.signUp({ email, password })
-      : supabase.auth.signInWithPassword({ email, password });
-
-    const { data, error } = await action;
-    console.log("✅ Supabase response:", { data, error });
-
-    if (error) {
-      console.error("Auth error:", error.message);
-      modalMessage.textContent = error.message;
+    if (!email || !password) {
+      modalMessage.textContent = "Email and password required";
       return;
     }
 
-    if (!data.session && !isSignup) {
-      modalMessage.textContent = "Sign-in failed: No session returned";
-      return;
-    }
+    modalMessage.textContent = isSignup ? "Signing up..." : "Signing in...";
+    console.log("🔐 Attempting sign-in with:", email);
+    console.log("🧠 isSignup:", isSignup);
 
-    modalMessage.textContent = isSignup
-      ? "Signup successful! Check your email to confirm."
-      : "Signed in successfully!";
-    hideModal();
-    await refreshUser();
-  } catch (err) {
-    console.error("Unexpected error:", err);
-    modalMessage.textContent = "Something went wrong. Try again.";
-  }
-});
+    try {
+      const action = isSignup
+        ? supabase.auth.signUp({ email, password })
+        : supabase.auth.signInWithPassword({ email, password });
+
+      const { data, error } = await action;
+      console.log("✅ Supabase response:", { data, error });
+
+      if (error) {
+        console.error("Auth error:", error.message);
+        modalMessage.textContent = error.message;
+        return;
+      }
+
+      if (!data.session && !isSignup) {
+        modalMessage.textContent = "Sign-in failed: No session returned";
+        return;
+      }
+
+      modalMessage.textContent = isSignup
+        ? "Signup successful! Check your email to confirm."
+        : "Signed in successfully!";
+      hideModal();
+      await refreshUser();
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      modalMessage.textContent = "Something went wrong. Try again.";
+    }
+  });
+}
 
 // Sign out
-signOutBtn.addEventListener("click", async () => {
+signOutBtn?.addEventListener("click", async () => {
   await supabase.auth.signOut();
   await refreshUser();
 });
@@ -165,7 +175,7 @@ function renderPosts(posts) {
 }
 
 // Handle form submission
-shareForm.addEventListener("submit", async (e) => {
+shareForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
   setStatus("Preparing post...");
 
@@ -221,10 +231,7 @@ shareForm.addEventListener("submit", async (e) => {
 });
 
 // Clear form
-document.getElementById("clearBtn").addEventListener("click", () => {
+document.getElementById("clearBtn")?.addEventListener("click", () => {
   shareForm.reset();
   setStatus("");
 });
-
-// Initial load
-loadPosts();

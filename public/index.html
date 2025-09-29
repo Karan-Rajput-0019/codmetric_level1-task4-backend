@@ -90,7 +90,7 @@
   </template>
 
   <!-- Auth Modal -->
-  <div id="authModal" class="modal hidden">
+  <div id="authModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2 id="modalTitle">Sign In</h2>
       <form id="authForm">
@@ -102,5 +102,20 @@
       <button id="closeModal" class="btn ghost">Cancel</button>
     </div>
   </div>
+
+  <!-- ✅ Debug Script to Confirm JS Is Running -->
+  <script>
+    console.log("✅ index.html loaded");
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("authForm");
+      if (form) {
+        form.addEventListener("submit", () => {
+          console.log("✅ authForm submit triggered");
+        });
+      } else {
+        console.warn("⚠️ authForm not found");
+      }
+    });
+  </script>
 </body>
 </html>
