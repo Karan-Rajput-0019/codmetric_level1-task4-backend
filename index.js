@@ -29,7 +29,11 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: CORS_ORIGINS.split(",") }));
+
+// ✅ Temporarily allow all origins
+app.use(cors());
+
+app.use(express.urlencoded({ extended: true }));
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -38,6 +42,22 @@ const upload = multer({
 
 // Health check
 app.get("/health", (_req, res) => res.json({ ok: true }));
+
+// ✅ New sign-in route
+app.post("/api/signin", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || typeof email !== "string") {
+      return res.status(400).json({ error: "Invalid email" });
+    }
+
+    // You can add Supabase auth logic here if needed
+    res.status(200).json({ message: "Sign-in successful", email });
+  } catch (err) {
+    console.error("Sign-in error:", err.message);
+    res.status(500).json({ error: "Failed to sign in" });
+  }
+});
 
 // Fetch posts (paginated)
 app.get("/api/posts", async (req, res) => {
