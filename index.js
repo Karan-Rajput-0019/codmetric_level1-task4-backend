@@ -5,6 +5,13 @@ import multer from "multer";
 import { createClient } from "@supabase/supabase-js";
 import path from "path";
 import fs from "fs";
+import helmet from "helmet";
+import compression from "compression";
+import cookieParser from "cookie-parser";
+
+app.use(helmet());
+app.use(compression());
+app.use(cookieParser());
 
 dotenv.config();
 
@@ -29,11 +36,25 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 
 const app = express();
 app.use(express.json());
-
-// ✅ Temporarily allow all origins
-app.use(cors());
-
 app.use(express.urlencoded({ extended: true }));
+
+// Configure CORS: allow configured origins and credentials if cookies are used
+const origins = CORS_ORIGINS.split(",").map(s => s.trim()).filter(Boolean);
+app.use(cors({
+  origin: origins.length ? origins : true,
+  credentials: true
+}));
+
+// Small middleware to ensure API responses include charset and a cache policy
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/")) {
+    // ensure JSON responses include charset
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    // tell browsers not to cache sensitive API responses
+    res.setHeader("Cache-Control", "no-store");
+  }
+  next();
+});
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -43,18 +64,29 @@ const upload = multer({
 // Health check
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
-// ✅ New sign-in route
+// Sign-in route (basic) — logs request for debugging; accepts email and password
 app.post("/api/signin", async (req, res) => {
   try {
-    const { email } = req.body;
+    console.log("[/api/signin] headers:", req.headers["content-type"]);
+    console.log("[/api/signin] body:", req.body);
+
+    const { email, password } = req.body;
     if (!email || typeof email !== "string") {
       return res.status(400).json({ error: "Invalid email" });
     }
 
-    // You can add Supabase auth logic here if needed
-    res.status(200).json({ message: "Sign-in successful", email });
+    // If you later want to set cookies here, use res.cookie(...) so Express formats Expires correctly.
+    // Example (uncomment when needed):
+    // res.cookie("session_token", tokenValue, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "lax",
+    //   expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    // });
+
+    return res.status(200).json({ message: "Sign-in successful", email });
   } catch (err) {
-    console.error("Sign-in error:", err.message);
+    console.error("Sign-in error:", err && err.message ? err.message : err);
     res.status(500).json({ error: "Failed to sign in" });
   }
 });
@@ -74,7 +106,7 @@ app.get("/api/posts", async (req, res) => {
     if (error) throw error;
     res.json({ posts: data });
   } catch (err) {
-    console.error("Error fetching posts:", err.message);
+    console.error("Error fetching posts:", err && err.message ? err.message : err);
     res.status(500).json({ error: err.message || "Failed to fetch posts" });
   }
 });
@@ -136,7 +168,7 @@ app.post("/api/posts", upload.single("image"), async (req, res) => {
 
     res.status(201).json({ post: postData });
   } catch (err) {
-    console.error("Error creating post:", err.message);
+    console.error("Error creating post:", err && err.message ? err.message : err);
     res.status(500).json({ error: err.message || "Failed to create post" });
   }
 });
